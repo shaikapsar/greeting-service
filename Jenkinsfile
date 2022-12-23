@@ -36,9 +36,11 @@ pipeline {
       }
       steps {
         // using the Pipeline Maven plugin we can set maven configuration settings, publish test results, and annotate the Jenkins console
-        withMaven(options: [findbugsPublisher(), junitPublisher(ignoreAttachments: false)]) {
-          sh 'mvn clean findbugs:findbugs package'
-        }
+       //// withMaven(options: [findbugsPublisher(), junitPublisher(ignoreAttachments: false)]) {
+        //  sh 'mvn clean findbugs:findbugs package'
+       // }
+
+       sh 'mvn clean install'
       }
       post {
         success {
