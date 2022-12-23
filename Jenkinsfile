@@ -5,7 +5,7 @@ pipeline {
    * This agent will need docker, git and a jdk installed at a minimum.
    */
   agent {
-     node {
+    node {
       label 'docker'
     }
   }
