@@ -5,7 +5,9 @@ pipeline {
    * This agent will need docker, git and a jdk installed at a minimum.
    */
   agent {
-    label 'docker'
+     node {
+      label 'docker'
+    }
   }
 
   // using the Timestamper plugin we can add timestamps to the console log
@@ -69,6 +71,7 @@ pipeline {
           }
           steps {
             //sh 'mvn sonar:sonar -Dsonar.login=$SONAR_PSW'
+            sh 'echo sonar'
           }
         }
       }
