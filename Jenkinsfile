@@ -5,9 +5,7 @@ pipeline {
    * This agent will need docker, git and a jdk installed at a minimum.
    */
   agent {
-    node {
-      label 'docker'
-    }
+    label 'docker'
   }
 
   // using the Timestamper plugin we can add timestamps to the console log
