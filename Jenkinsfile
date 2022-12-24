@@ -128,6 +128,9 @@ pipeline {
     --family test \\
     --container-definitions "[{\\"name\\":\\"sleep\\",\\"image\\":\\"busybox\\",\\"cpu\\":10,\\"command\\":[\\"sleep\\",\\"360\\"],\\"memory\\":10,\\"essential\\":true}]"'''
 
+    sh "aws ecs list-task-definitions"
+    
+
         }
         
       }
