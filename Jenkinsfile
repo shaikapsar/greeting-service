@@ -16,6 +16,10 @@ pipeline {
     skipStagesAfterUnstable()
   }
 
+  parameters {
+    string defaultValue: 'us-east-1', description: 'AWS REGION ', name: 'REGION', trim: true
+  } 
+
   environment {
     //Use Pipeline Utility Steps plugin to read information from pom.xml into env variables
     IMAGE = readMavenPom().getArtifactId()
@@ -114,8 +118,10 @@ pipeline {
 
       steps {
         withAWS(region:'us-east-1', credentials: 'jenkins-automation') {
+
+          //aws ec2 create-vpc --cidr-block "172.31.0.0/16"  --tag-specification ResourceType=vpc,Tags=[{Key=PURPOSE,Value=INTERVIEW}]
           sh """
-            aws ec2 create-vpc --cidr-block "172.31.0.0/16"  --tag-specification ResourceType=vpc,Tags=[{Key=PURPOSE,Value=INTERVIEW}]
+            
           """
         }
         
