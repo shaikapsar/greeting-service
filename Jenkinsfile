@@ -13,6 +13,7 @@ pipeline {
   // using the Timestamper plugin we can add timestamps to the console log
   options {
     timestamps()
+    skipStagesAfterUnstable()
   }
 
   environment {
@@ -98,7 +99,7 @@ pipeline {
         """*/
 
         
-        docker.withRegistry('996251668898.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:jenkins-automation') {
+        docker.withRegistry('https://996251668898.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:jenkins-automation') {
             def customImage = docker.build("greeting-service:${env.BUILD_ID}")
             customImage.push()
         }
