@@ -123,10 +123,8 @@ pipeline {
 
           //aws ec2 create-vpc --cidr-block "172.31.0.0/16"  --tag-specification ResourceType=vpc,Tags=[{Key=PURPOSE,Value=INTERVIEW}]
       
-          sh """
-            aws ecs create-cluster --cluster-name  ${params.ECS_CLUSTER}
-            aws ecs register-task-definition --family ${params.ECS_FAMILY} --container-definitions \"[{\"name\":\"sleep\",\"image\":\"busybox\",\"cpu\":10,\"command\":[\"sleep\",\"360\"],\"memory\":10,\"essential\":true}]\"
-            """
+          sh "aws ecs create-cluster --cluster-name  ${params.ECS_CLUSTER}"
+          sh "aws ecs register-task-definition --family ${params.ECS_FAMILY} --container-definitions \"[{\"name\":\"sleep\",\"image\":\"busybox\",\"cpu\":10,\"command\":[\"sleep\",\"360\"],\"memory\":10,\"essential\":true}]\""
 
         }
         
