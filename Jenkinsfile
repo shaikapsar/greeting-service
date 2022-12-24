@@ -125,7 +125,7 @@ pipeline {
           sh """
             aws ecs create-cluster --cluster-name  ${params.ECS_CLUSTER}
             aws ecs register-task-definition --family ${params.ECS_FAMILY} \
-              --container-definitions "[{\"name\":\"sleep\",\"image\":\"busybox\",\"cpu\":10,\"command\":[\"sleep\",\"360\"],\"memory\":10,\"essential\":true}]"
+              --container-definitions "[{"name":"sleep","image":"busybox","cpu":10,"command":["sleep","360"],"memory":10,"essential":true}]"
           """
         }
         
