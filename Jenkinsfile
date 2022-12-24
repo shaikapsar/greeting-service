@@ -20,6 +20,9 @@ pipeline {
     string defaultValue: 'us-east-1', description: 'AWS REGION ', name: 'REGION', trim: true
     string defaultValue: 'default', description: 'ECS CLUSTER', name: 'ECS_CLUSTER', trim: true
     string defaultValue: 'backend', description: 'ECS FAMILY', name: 'ECS_FAMILY', trim: true
+    string defaultValue: 'subnet-0e8e34eeb5a9bf7cd', description: 'ECS_SUBNET', name: 'ECS_SUBNET', trim: true
+    string defaultValue: 'sg-0cc9d656c78a0419e', description: 'ECS_SECURITY_GROUP', name: 'ECS_SECURITY_GROUP', trim: true
+    
   } 
 
   environment {
@@ -122,10 +125,13 @@ pipeline {
         withAWS(region:'us-east-1', credentials: 'jenkins-automation') {
 
           // create vpc
-          sh encoding: 'UTF-8', label: 'VPC_CREATE', returnStatus: true, returnStdout: true, script: 'aws ec2 create-vpc --cidr-block "172.31.0.0/16"'
+          //sh encoding: 'UTF-8', label: 'VPC_CREATE', returnStatus: true, returnStdout: true, script: 'aws ec2 create-vpc --cidr-block "172.31.0.0/16"'
 
           // create ecs cluster
           sh encoding: 'UTF-8', script: "aws ecs create-cluster --cluster-name  ${params.ECS_CLUSTER}"
+
+
+          sh encoding: 'UTF-8', label: 'CREATE-SERVICE', returnStatus: true, returnStdout: true, script: "aws ecs create-service --cluster ${params.ECS_CLUSTER} --service-name fargate-service --task-definition test:2 --desired-count 1 --launch-type \"FARGATE\" --network-configuration \"awsvpcConfiguration={subnets=[${params.ECS_SUBNET}],securityGroups=[${params.ECS_SECURITY_GROUP}],assignPublicIp=ENABLED}\""
 
           
 
