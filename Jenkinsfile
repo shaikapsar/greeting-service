@@ -96,6 +96,22 @@ pipeline {
           }
         }
       }
+
+     stage('Deploy') {
+      when {
+        branch 'main'  //only run these steps on the master branch
+      }
+      agent {
+        docker {
+              // we can use the same image and workspace as we did previously
+            reuseNode true
+            image 'ansible'
+          }
+        }
+      steps {
+        sh "ansible --version"
+      }
+     }
   }
 
   
