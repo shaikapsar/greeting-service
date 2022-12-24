@@ -100,7 +100,7 @@ pipeline {
       }
     }  //end of Build and Publish Image
 
-    stage('Build and Publish Image') {
+    stage('Deploy') {
       when {
         branch 'main'  //only run these steps on the master branch
       }
