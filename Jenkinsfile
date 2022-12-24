@@ -25,7 +25,7 @@ pipeline {
     //Use Pipeline Utility Steps plugin to read information from pom.xml into env variables
     IMAGE = readMavenPom().getArtifactId()
     VERSION = readMavenPom().getVersion()
-    ECS_CLUSTER = param.ECS_CLUSTER
+    ECS_CLUSTER = params.ECS_CLUSTER
   }
 
   stages {
