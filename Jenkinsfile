@@ -25,7 +25,6 @@ pipeline {
     //Use Pipeline Utility Steps plugin to read information from pom.xml into env variables
     IMAGE = readMavenPom().getArtifactId()
     VERSION = readMavenPom().getVersion()
-    ECS_CLUSTER = params.ECS_CLUSTER
   }
 
   stages {
@@ -123,7 +122,7 @@ pipeline {
 
           //aws ec2 create-vpc --cidr-block "172.31.0.0/16"  --tag-specification ResourceType=vpc,Tags=[{Key=PURPOSE,Value=INTERVIEW}]
           sh """
-            aws ecs create-cluster --cluster-name $ECS_CLUSTER
+            aws ecs create-cluster --cluster-name  ${params.ECS_CLUSTER}
           """
         }
         
