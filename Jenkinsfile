@@ -91,7 +91,7 @@ pipeline {
         script{
           docker.withRegistry('https://996251668898.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:jenkins-automation') {
             def customImage = docker.build("devsecops/${env.IMAGE}:${env.VERSION}-${env.BUILD_ID}")
-             // customImage.push()
+            customImage.push()
             }
           }
         }
