@@ -122,7 +122,7 @@ pipeline {
 
           //aws ec2 create-vpc --cidr-block "172.31.0.0/16"  --tag-specification ResourceType=vpc,Tags=[{Key=PURPOSE,Value=INTERVIEW}]
           sh """
-            
+            aws ecs create-cluster --cluster-name $ECS_CLUSTER
           """
         }
         
