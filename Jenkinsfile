@@ -131,9 +131,9 @@ pipeline {
           sh encoding: 'UTF-8', script: "aws ecs create-cluster --cluster-name  ${params.ECS_CLUSTER}"
 
 
-          sh encoding: 'UTF-8', label: 'CREATE-SERVICE', returnStatus: true, returnStdout: true, script: "aws ecs create-service --cluster ${params.ECS_CLUSTER} --service-name fargate-service --task-definition test:2 --desired-count 1 --launch-type \"FARGATE\" --network-configuration \"awsvpcConfiguration={subnets=[${params.ECS_SUBNET}],securityGroups=[${params.ECS_SECURITY_GROUP}],assignPublicIp=ENABLED}\""
+          sh encoding: 'UTF-8', label: 'CREATE-SERVICE', returnStatus: true, returnStdout: true, script: "aws ecs create-service --cluster ${params.ECS_CLUSTER} --service-name ${env.IMAGE} --task-definition test:2 --desired-count 1  --network-configuration \"awsvpcConfiguration={subnets=[${params.ECS_SUBNET}],securityGroups=[${params.ECS_SECURITY_GROUP}],assignPublicIp=ENABLED}\""
 
-          
+          //--launch-type \"FARGATE\"
 
 
         }
