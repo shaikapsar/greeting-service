@@ -81,7 +81,7 @@ pipeline {
 
     stage('Build and Publish Image') {
       when {
-        branch 'master'  //only run these steps on the master branch
+        branch 'main'  //only run these steps on the master branch
       }
       steps {
         /*
