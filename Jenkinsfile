@@ -78,9 +78,9 @@ pipeline {
         }
       }
     }
-    environment {
-      ECR_CREDENTIALS = credentials('jenkins-automation')
-    }
+    //environment {
+    //  ECR_CREDENTIALS = credentials('jenkins-automation')
+    //}
     stage('Build and Publish Image') {
       when {
         branch 'main'  //only run these steps on the master branch
