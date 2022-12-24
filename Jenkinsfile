@@ -67,10 +67,10 @@ pipeline {
               image 'maven:3.5.0-jdk-8'
             }
           }
-          environment {
+         // environment {
             //use 'sonar' credentials scoped only to this stage
-            SONAR = credentials('sonar')
-          }
+         //   SONAR = credentials('sonar')
+          //}
           steps {
             //sh 'mvn sonar:sonar -Dsonar.login=$SONAR_PSW'
             sh 'echo sonar'
