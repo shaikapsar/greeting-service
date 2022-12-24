@@ -98,9 +98,13 @@ pipeline {
           docker push ${IMAGE}:${VERSION}
         """*/
 
+      //sh 'rm  ~/.dockercfg || true'
+      //sh 'rm ~/.docker/config.json || true'
+
       script{
+
         docker.withRegistry('https://996251668898.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:jenkins-automation') {
-          def customImage = docker.build("greeting-service:${env.BUILD_ID}")
+          def customImage = docker.build("devsecops/greeting-service:${env.BUILD_ID}")
             customImage.push()
           }
         }
