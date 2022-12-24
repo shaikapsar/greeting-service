@@ -38,7 +38,8 @@ pipeline {
       steps {
         // using the Pipeline Maven plugin we can set maven configuration settings, publish test results, and annotate the Jenkins console
        withMaven(options: [junitPublisher(ignoreAttachments: false)]) {
-        sh 'mvn clean findbugs:findbugs package'
+        //sh 'mvn clean findbugs:findbugs package'
+        echo 'Run build here...'
        }
 
        //sh 'mvn -U clean package'
@@ -46,7 +47,8 @@ pipeline {
       post {
         success {
           // we only worry about archiving the jar file if the build steps are successful
-          archiveArtifacts(artifacts: '**/target/*.jar', allowEmptyArchive: true)
+          //archiveArtifacts(artifacts: '**/target/*.jar', allowEmptyArchive: true)
+          echo 'JUNIT here...'
         }
       }
     }
@@ -90,9 +92,10 @@ pipeline {
       steps {
         script{
           docker.withRegistry('https://996251668898.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:jenkins-automation') {
-            def customImage = docker.build("devsecops/${env.IMAGE}:${env.VERSION}-${env.BUILD_ID}")
-            customImage.push()
-            }
+              echo 'Run integration tests here...'
+           // def customImage = docker.build("devsecops/${env.IMAGE}:${env.VERSION}-${env.BUILD_ID}")
+           // customImage.push()
+          //}
           }
         }
       }
@@ -105,12 +108,14 @@ pipeline {
         docker {
               // we can use the same image and workspace as we did previously
             reuseNode true
-            image 'alpinelinux/ansible'
+            image 'amazon/aws-cli:2.9.10'
           }
         }
-      steps {
-        sh "ansible --version"
-      }
+        steps {
+           //sh 'mvn sonar:sonar -Dsonar.login=$SONAR_PSW'
+          sh 's3 ls'
+          }
+        }
      }
   }
 
