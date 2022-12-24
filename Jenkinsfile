@@ -78,21 +78,30 @@ pipeline {
         }
       }
     }
-
+    environment {
+      ECR_CREDENTIALS = credentials('jenkins-automation')
+    }
     stage('Build and Publish Image') {
       when {
         branch 'main'  //only run these steps on the master branch
       }
+
       steps {
         /*
          * Multiline strings can be used for larger scripts. It is also possible to put scripts in your shared library
          * and load them with 'libaryResource'
-         */
+        
         sh """
           docker build -t ${IMAGE} .
           docker tag ${IMAGE} ${IMAGE}:${VERSION}
           docker push ${IMAGE}:${VERSION}
-        """
+        """*/
+
+        
+        docker.withRegistry('996251668898.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:jenkins-automation') {
+            def customImage = docker.build("greeting-service:${env.BUILD_ID}")
+            customImage.push()
+        }
       }
     }
   }
