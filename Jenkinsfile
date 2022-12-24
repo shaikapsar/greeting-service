@@ -18,6 +18,7 @@ pipeline {
 
   parameters {
     string defaultValue: 'us-east-1', description: 'AWS REGION ', name: 'REGION', trim: true
+    string defaultValue: 'default', description: 'ECS CLUSTER', name: 'ECS_CLUSTER', trim: true
   } 
 
   environment {
