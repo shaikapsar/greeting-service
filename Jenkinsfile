@@ -23,6 +23,7 @@ pipeline {
   }
 
   stages {
+
     stage('Build') {
       agent {
         docker {
@@ -37,13 +38,12 @@ pipeline {
       }
       steps {
         // using the Pipeline Maven plugin we can set maven configuration settings, publish test results, and annotate the Jenkins console
-       withMaven(options: [junitPublisher(ignoreAttachments: false)]) {
-        //sh 'mvn clean findbugs:findbugs package'
-        echo 'Run build here...'
-       }
-
-       //sh 'mvn -U clean package'
+        withMaven(options: [junitPublisher(ignoreAttachments: false)]) {
+          //sh 'mvn clean findbugs:findbugs package'
+          echo 'Run build here...'
+        }
       }
+
       post {
         success {
           // we only worry about archiving the jar file if the build steps are successful
@@ -53,37 +53,36 @@ pipeline {
       }
     }
 
-  stage('Quality Analysis') {
-    parallel {
-      // run Sonar Scan and Integration tests in parallel. This syntax requires Declarative Pipeline 1.2 or higher
-      stage ('Integration Test') {
-        agent any  //run this stage on any available agent
-        steps {
-          echo 'Run integration tests here...'
-        }
-      }
-      stage('Sonar Scan') {
-        agent {
-          docker {
-              // we can use the same image and workspace as we did previously
-            reuseNode true
-            image 'maven:3.5.0-jdk-8'
+    stage('Quality Analysis') {
+      parallel {
+        // run Sonar Scan and Integration tests in parallel. This syntax requires Declarative Pipeline 1.2 or higher
+        stage ('Integration Test') {
+          agent any  //run this stage on any available agent
+          steps {
+            echo 'Run integration tests here...'
           }
         }
-         // environment {
-            //use 'sonar' credentials scoped only to this stage
-         //   SONAR = credentials('sonar')
-          //}
-        steps {
-           //sh 'mvn sonar:sonar -Dsonar.login=$SONAR_PSW'
-          sh 'echo sonar'
+        stage('Sonar Scan') {
+          agent {
+            docker {
+                // we can use the same image and workspace as we did previously
+              reuseNode true
+              image 'maven:3.5.0-jdk-8'
+            }
+          }
+          // environment {
+              //use 'sonar' credentials scoped only to this stage
+          //   SONAR = credentials('sonar')
+            //}
+          steps {
+            //sh 'mvn sonar:sonar -Dsonar.login=$SONAR_PSW'
+            sh 'echo sonar'
           }
         }
-      }
-    }
-    //environment {
-    //  ECR_CREDENTIALS = credentials('jenkins-automation')
-    //}
+
+      } //end of parallel
+    } //end of Quality Analysis stage
+
     stage('Build and Publish Image') {
       when {
         branch 'main'  //only run these steps on the master branch
@@ -99,35 +98,25 @@ pipeline {
           }
         }
       }
+    }  //end of Build and Publish Image
 
-     stage('Deploy') {
+    stage('Build and Publish Image') {
       when {
         branch 'main'  //only run these steps on the master branch
       }
       agent {
         docker {
-              // we can use the same image and workspace as we did previously
-            reuseNode true
-            image 'amazon/aws-cli:2.9.10'
-          }
+           // we can use the same image and workspace as we did previously
+          reuseNode true
+          image 'amazon/aws-cli:2.9.10'
         }
-        steps {
-           //sh 'mvn sonar:sonar -Dsonar.login=$SONAR_PSW'
-          sh 's3 ls'
-          }
-        }
-     }
-  }
+      }
 
-  
+      steps {
+        sh 's3 ls'
+      }
+    }  //end of Build and Publish Image
 
+  } //end of stages
 
-  //post {
-  //  failure {
-      // notify users when the Pipeline fails
-      //mail to: 'iaijaz702@gmail.com',
-      //    subject: "Failed Pipeline: ${currentBuild.fullDisplayName}",
-      //    body: "Something is wrong with ${env.BUILD_URL}"
-  //  }
-  //}
-}
+} //end of pipeline
