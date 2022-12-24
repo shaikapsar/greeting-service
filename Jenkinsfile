@@ -37,11 +37,11 @@ pipeline {
       }
       steps {
         // using the Pipeline Maven plugin we can set maven configuration settings, publish test results, and annotate the Jenkins console
-       //// withMaven(options: [findbugsPublisher(), junitPublisher(ignoreAttachments: false)]) {
-        //  sh 'mvn clean findbugs:findbugs package'
-       // }
+       withMaven(options: [junitPublisher(ignoreAttachments: false)]) {
+        sh 'mvn clean findbugs:findbugs package'
+       }
 
-       sh 'mvn -U clean package'
+       //sh 'mvn -U clean package'
       }
       post {
         success {
@@ -51,30 +51,30 @@ pipeline {
       }
     }
 
-    stage('Quality Analysis') {
-      parallel {
-        // run Sonar Scan and Integration tests in parallel. This syntax requires Declarative Pipeline 1.2 or higher
-        stage ('Integration Test') {
-          agent any  //run this stage on any available agent
-          steps {
-            echo 'Run integration tests here...'
+  stage('Quality Analysis') {
+    parallel {
+      // run Sonar Scan and Integration tests in parallel. This syntax requires Declarative Pipeline 1.2 or higher
+      stage ('Integration Test') {
+        agent any  //run this stage on any available agent
+        steps {
+          echo 'Run integration tests here...'
+        }
+      }
+      stage('Sonar Scan') {
+        agent {
+          docker {
+              // we can use the same image and workspace as we did previously
+            reuseNode true
+            image 'maven:3.5.0-jdk-8'
           }
         }
-        stage('Sonar Scan') {
-          agent {
-            docker {
-              // we can use the same image and workspace as we did previously
-              reuseNode true
-              image 'maven:3.5.0-jdk-8'
-            }
-          }
          // environment {
             //use 'sonar' credentials scoped only to this stage
          //   SONAR = credentials('sonar')
           //}
-          steps {
-            //sh 'mvn sonar:sonar -Dsonar.login=$SONAR_PSW'
-            sh 'echo sonar'
+        steps {
+           //sh 'mvn sonar:sonar -Dsonar.login=$SONAR_PSW'
+          sh 'echo sonar'
           }
         }
       }
@@ -88,28 +88,14 @@ pipeline {
       }
 
       steps {
-        /*
-         * Multiline strings can be used for larger scripts. It is also possible to put scripts in your shared library
-         * and load them with 'libaryResource'
-        
-        sh """
-          docker build -t ${IMAGE} .
-          docker tag ${IMAGE} ${IMAGE}:${VERSION}
-          docker push ${IMAGE}:${VERSION}
-        """*/
-
-      //sh 'rm  ~/.dockercfg || true'
-      //sh 'rm ~/.docker/config.json || true'
-
-      script{
-
-        docker.withRegistry('https://996251668898.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:jenkins-automation') {
-          def customImage = docker.build("devsecops/greeting-service:${env.BUILD_ID}")
-            customImage.push()
+        script{
+          docker.withRegistry('https://996251668898.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:jenkins-automation') {
+            def customImage = docker.build("devsecops/greeting-service:${env.BUILD_ID}")
+              customImage.push()
+            }
           }
         }
       }
-    }
   }
 
   
