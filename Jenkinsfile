@@ -115,7 +115,7 @@ pipeline {
       steps {
         withAWS(region:'us-east-1', credentials: 'jenkins-automation') {
           sh """
-            aws ec2 create-vpc --cidr-block "10.0.0.0/16"  --tag-specification ResourceType=vpc,Tags=[{Key=PURPOSE,Value=INTERVIEW}]
+            aws ec2 create-vpc --cidr-block "172.31.0.0/16"  --tag-specification ResourceType=vpc,Tags=[{Key=PURPOSE,Value=INTERVIEW}]
           """
         }
         
