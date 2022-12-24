@@ -104,13 +104,13 @@ pipeline {
       when {
         branch 'main'  //only run these steps on the master branch
       }
-      agent {
+ /*     agent {
         docker {
            // we can use the same image and workspace as we did previously
           reuseNode true
           image 'amazon/aws-cli:2.9.10'
         }
-      }
+      }*/
 
       steps {
         withAWS(region:'us-east-1', credentials: 'jenkins-automation') {
