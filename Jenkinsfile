@@ -121,7 +121,7 @@ pipeline {
       steps {
         withAWS(region:'us-east-1', credentials: 'jenkins-automation') {
 
-          sh encoding: 'UTF-8', script: 'aws ecs create-cluster --cluster-name  ${params.ECS_CLUSTER}'
+          sh encoding: 'UTF-8', script: 'aws ecs create-cluster --cluster-name  ${params.ECS_CLUSTER}"
 
           //aws ec2 create-vpc --cidr-block "172.31.0.0/16"  --tag-specification ResourceType=vpc,Tags=[{Key=PURPOSE,Value=INTERVIEW}]
       /*
