@@ -41,7 +41,7 @@ pipeline {
         //  sh 'mvn clean findbugs:findbugs package'
        // }
 
-       sh 'mvn clean install'
+       sh 'mvn -U clean package'
       }
       post {
         success {
