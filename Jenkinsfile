@@ -105,7 +105,7 @@ pipeline {
         docker {
               // we can use the same image and workspace as we did previously
             reuseNode true
-            image 'ansible/ansible'
+            image 'alpinelinux/ansible'
           }
         }
       steps {
