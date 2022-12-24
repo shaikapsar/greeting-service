@@ -113,9 +113,9 @@ pipeline {
       }
 
       steps {
-        sh 's3 ls'
+        sh 'aws --version'
       }
-    }  //end of Build and Publish Image
+    }  //end of Deploy
 
   } //end of stages
 
