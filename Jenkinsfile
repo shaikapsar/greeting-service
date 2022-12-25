@@ -21,11 +21,8 @@ pipeline {
 
   parameters {
     credentials credentialType: 'com.cloudbees.jenkins.plugins.awscredentials.AWSCredentialsImpl', defaultValue: 'ecr:us-east-1:jenkins-automation', description: 'ECR Credentails', name: 'ecr_credentails', required: false
-    string defaultValue: 'us-east-1', description: 'AWS REGION ', name: 'REGION', trim: true
-    string defaultValue: 'default', description: 'ECS CLUSTER', name: 'ECS_CLUSTER', trim: true
-    string defaultValue: 'backend', description: 'ECS FAMILY', name: 'ECS_FAMILY', trim: true
-    string defaultValue: 'subnet-0e8e34eeb5a9bf7cd', description: 'ECS_SUBNET', name: 'ECS_SUBNET', trim: true
-    string defaultValue: 'sg-0cc9d656c78a0419e', description: 'ECS_SECURITY_GROUP', name: 'ECS_SECURITY_GROUP', trim: true
+    credentials credentialType: 'com.cloudbees.jenkins.plugins.awscredentials.AWSCredentialsImpl', defaultValue: 'jenkins-automation', description: 'AWS Credentails', name: 'aws_credentails', required: false
+    
   } 
 
   environment {
@@ -33,6 +30,7 @@ pipeline {
     IMAGE = readMavenPom().getArtifactId()
     VERSION = readMavenPom().getVersion()
     ECR_CREDENTAILS = "${params.ecr_credentails}"
+    AWS_CREDENTIALS = "${params.aws_credentails}"
   }
 
   stages {
@@ -135,18 +133,18 @@ pipeline {
       }*/
 
       steps {
-        withAWS(region:'us-east-1', credentials: 'jenkins-automation') {
+        withAWS(region:'us-east-1', credentials: "${env.AWS_CREDENTIALS}") {
 
           // create vpc
           //sh encoding: 'UTF-8', label: 'VPC_CREATE', returnStatus: true, returnStdout: true, script: 'aws ec2 create-vpc --cidr-block "172.31.0.0/16"'
 
           // create ecs cluster
-          sh encoding: 'UTF-8', script: "aws ecs create-cluster --cluster-name  ${params.ECS_CLUSTER}"
+          sh encoding: 'UTF-8', script: "aws ecs create-cluster --cluster-name  ${env.ECS_CLUSTER}"
 
          // --network-mode
 
 
-          sh encoding: 'UTF-8', label: 'CREATE-SERVICE', returnStatus: true, returnStdout: true, script: "aws ecs create-service --cluster ${params.ECS_CLUSTER} --service-name ${env.IMAGE} --task-definition test:2 --desired-count 1  --network-configuration \"awsvpcConfiguration={subnets=[${params.ECS_SUBNET}],securityGroups=[${params.ECS_SECURITY_GROUP}],assignPublicIp=ENABLED}\""
+          sh encoding: 'UTF-8', label: 'CREATE-SERVICE', returnStatus: true, returnStdout: true, script: "aws ecs create-service --cluster ${env.ECS_CLUSTER} --service-name ${env.IMAGE} --task-definition test:2 --desired-count 1  --network-configuration \"awsvpcConfiguration={subnets=[${env.ECS_SUBNET}],securityGroups=[${env.ECS_SECURITY_GROUP}],assignPublicIp=ENABLED}\""
 
           //--launch-type \"FARGATE\"
 
