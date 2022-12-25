@@ -152,7 +152,7 @@ pipeline {
             # run your container
             docker container run -d --rm --name ${env.IMAGE} -p 8080:8080 --restart unless-stopped "${env.ECR_REPO}/${env.IMAGE}:${env.VERSION}-${env.COMMIT}"
         fi'''
-        }
+        
         
       }
     }  //end of Deploy
