@@ -32,12 +32,6 @@ pipeline {
     ECR_CREDENTAILS = "${params.ecr_credentails}"
     AWS_CREDENTIALS = "${params.aws_credentails}"
     REGION = "${params.region}"
-    withAWS(credentials: "${env.AWS_CREDENTIALS}") {
-      env.AWS_ACCOUNT_NUMBER =  sh (
-                    script: "aws sts get-caller-identity --query "Account" --output text",
-                    returnStdout: true
-                    ).trim()
-    }
   }
 
   stages {
@@ -104,8 +98,14 @@ pipeline {
     stage('SetEnvironment'){
       steps {
         script {
+          withAWS(credentials: "${params.aws_credentails}") {
+            AWS_ACCOUNT_NUMBER =  sh (
+                          script: 'aws sts get-caller-identity --query "Account" --output text',
+                          returnStdout: true
+                          ).trim()
+          }
           // This step reloads the env with configured values for account number and region in various values.
-          readProperties(file: 'aws.env').each { key, value -> tv = value.replace("AWS_ACCOUNT_NUMBER", env.AWS_ACCOUNT_NUMBER)
+          readProperties(file: 'aws.env').each { key, value -> tv = value.replace("AWS_ACCOUNT_NUMBER", AWS_ACCOUNT_NUMBER)
                                                                               env[key] = tv.replace("REGION", env.REGION)
                                                               }
         }
