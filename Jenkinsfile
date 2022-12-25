@@ -145,7 +145,7 @@ pipeline {
 
       steps {
         sh encoding: 'UTF-8', returnStdout: true, script: """
-#          if [ "$(docker ps -aq -f name=${env.IMAGE})" ]; then
+#          if [ "\$(docker ps -aq -f name=${env.IMAGE})" ]; then
             # force remove containner 
 #            docker rm -f ${env.IMAGE}
 #          fi
