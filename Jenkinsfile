@@ -52,6 +52,7 @@ pipeline {
         // using the Pipeline Maven plugin we can set maven configuration settings, publish test results, and annotate the Jenkins console
         withMaven(options: [junitPublisher(ignoreAttachments: false)]) {
           //sh 'mvn clean findbugs:findbugs package'
+          env.COMMIT = sh (script: 'git log -1 --pretty=%h', returnStdout: true).trim()
           echo 'Run build here...'
         }
       }
@@ -123,7 +124,7 @@ pipeline {
           docker.withRegistry("${env.ECR_REGISTRY}", "${env.ECR_CREDENTAILS}") {
             echo 'Run integration tests here...'
             //-${env.BUILD_ID}
-            def customImage = docker.build("${env.ECR_REPO}/${env.IMAGE}:${env.VERSION}")
+            def customImage = docker.build("${env.ECR_REPO}/${env.IMAGE}:${env.VERSION}-${env.COMMIT}")
             customImage.push()
           //}
           }
@@ -148,7 +149,7 @@ pipeline {
 
           script {
             //-${BUILD_NUMBER}
-            def remoteImageTag  = "${env.VERSION}"
+            def remoteImageTag  = "${env.VERSION}-${env.COMMIT}"
             def taskDefile      = "file://aws/task-definition-${remoteImageTag}.json"
             def ecRegistry      = "${env.ECR_REPO}"
 
