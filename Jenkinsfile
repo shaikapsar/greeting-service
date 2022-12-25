@@ -144,37 +144,14 @@ pipeline {
  
 
       steps {
-        withAWS(region:'us-east-1', credentials: "${env.AWS_CREDENTIALS}") {
-
-          // create vpc
-          //sh encoding: 'UTF-8', label: 'VPC_CREATE', returnStatus: true, returnStdout: true, script: 'aws ec2 create-vpc --cidr-block "172.31.0.0/16"'
-
-          // create ecs cluster
-          sh encoding: 'UTF-8', script: "aws ecs create-cluster --cluster-name  ${env.ECS_CLUSTER}"
-
-          script {
-            //-${BUILD_NUMBER}
-            def remoteImageTag  = "${env.VERSION}-${env.COMMIT}"
-            def taskDefile      = "file://aws/task-definition-${remoteImageTag}.json"
-            def ecRegistry      = "${env.ECR_REPO}"
-
-        sh returnStdout: true, script: "sed -e  's;%BUILD_TAG%;${remoteImageTag};g'  aws/task-definition.json >   aws/task-definition-${remoteImageTag}.json"
-
-            sh returnStdout: true, script: "cat aws/task-definition-${remoteImageTag}.json"
-          }
-          
-
-         
-        
-
-         // --network-mode
-
-
-          sh encoding: 'UTF-8', label: 'CREATE-SERVICE', returnStatus: true, returnStdout: true, script: "aws ecs create-service --cluster ${env.ECS_CLUSTER} --service-name ${env.IMAGE} --task-definition test:2 --desired-count 1  --network-configuration \"awsvpcConfiguration={subnets=[${env.ECS_SUBNET}],securityGroups=[${env.ECS_SECURITY_GROUP}],assignPublicIp=ENABLED}\""
-
-          //--launch-type \"FARGATE\"
-
-
+        sh returnStdout: true, script: '''if [ ! "$(docker ps -q -f name=${env.IMAGE})" ]; then
+            if [ "$(docker ps -aq -f status=exited -f name=${env.IMAGE})" ]; then
+                # cleanup
+                docker rm ${env.IMAGE}
+            fi
+            # run your container
+            docker container run -d --rm --name ${env.IMAGE} -p 8080:8080 --restart unless-stopped "${env.ECR_REPO}/${env.IMAGE}:${env.VERSION}-${env.COMMIT}"
+        fi'''
         }
         
       }
