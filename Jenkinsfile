@@ -122,7 +122,8 @@ pipeline {
         script{
           docker.withRegistry("${env.ECR_REGISTRY}", "${env.ECR_CREDENTAILS}") {
             echo 'Run integration tests here...'
-            def customImage = docker.build("${env.ECR_REPO}/${env.IMAGE}:${env.VERSION}-${env.BUILD_ID}")
+            //-${env.BUILD_ID}
+            def customImage = docker.build("${env.ECR_REPO}/${env.IMAGE}:${env.VERSION}")
             customImage.push()
           //}
           }
@@ -146,19 +147,22 @@ pipeline {
           sh encoding: 'UTF-8', script: "aws ecs create-cluster --cluster-name  ${env.ECS_CLUSTER}"
 
           script {
-            def remoteImageTag  = "${env.VERSION}-${BUILD_NUMBER}"
+            //-${BUILD_NUMBER}
+            def remoteImageTag  = "${env.VERSION}"
             def taskDefile      = "file://aws/task-definition-${remoteImageTag}.json"
             def ecRegistry      = "${env.ECR_REPO}"
-          }
-          
 
-          sh  "                                                                     \
+             sh  "                                                                     \
           sed -e  's;%BUILD_TAG%;${remoteImageTag};g'                             \
                   aws/task-definition.json >                                      \
                   aws/task-definition-${remoteImageTag}.json                      \
         "
 
-        sh "cat aws/task-definition-${remoteImageTag}.json"
+          }
+          
+
+         
+        
 
          // --network-mode
 
