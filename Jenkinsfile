@@ -1,3 +1,6 @@
+import groovy.json.JsonOutput
+import groovy.json.JsonSlurperClassic
+
 pipeline {
 
   /*
@@ -17,18 +20,19 @@ pipeline {
   }
 
   parameters {
+    credentials credentialType: 'com.cloudbees.jenkins.plugins.awscredentials.AWSCredentialsImpl', defaultValue: 'ecr:us-east-1:jenkins-automation', description: 'ECR Credentails', name: 'ecr_credentails', required: false
     string defaultValue: 'us-east-1', description: 'AWS REGION ', name: 'REGION', trim: true
     string defaultValue: 'default', description: 'ECS CLUSTER', name: 'ECS_CLUSTER', trim: true
     string defaultValue: 'backend', description: 'ECS FAMILY', name: 'ECS_FAMILY', trim: true
     string defaultValue: 'subnet-0e8e34eeb5a9bf7cd', description: 'ECS_SUBNET', name: 'ECS_SUBNET', trim: true
     string defaultValue: 'sg-0cc9d656c78a0419e', description: 'ECS_SECURITY_GROUP', name: 'ECS_SECURITY_GROUP', trim: true
-    
   } 
 
   environment {
     //Use Pipeline Utility Steps plugin to read information from pom.xml into env variables
     IMAGE = readMavenPom().getArtifactId()
     VERSION = readMavenPom().getVersion()
+    ECR_CREDENTAILS = "${params.ecr_credentails}"
   }
 
   stages {
@@ -92,6 +96,15 @@ pipeline {
       } //end of parallel
     } //end of Quality Analysis stage
 
+    stage('SetEnvironment'){
+      steps {
+        script {
+          // This step reloads the env with configured values for account number and region in various values.
+          readProperties(file: 'aws.env').each { key, value -> env[key.toUpperCase()] = value }
+        }
+      }
+    }
+
     stage('Build and Publish Image') {
       when {
         branch 'main'  //only run these steps on the master branch
@@ -99,10 +112,10 @@ pipeline {
 
       steps {
         script{
-          docker.withRegistry('https://996251668898.dkr.ecr.us-east-1.amazonaws.com', 'ecr:us-east-1:jenkins-automation') {
-              echo 'Run integration tests here...'
-           // def customImage = docker.build("devsecops/${env.IMAGE}:${env.VERSION}-${env.BUILD_ID}")
-           // customImage.push()
+          docker.withRegistry("${env.ECR_REGISTRY}", "${env.ECR_CREDENTAILS}") {
+            echo 'Run integration tests here...'
+            def customImage = docker.build("${env.ECR_REPO}/${env.IMAGE}:${env.VERSION}-${env.BUILD_ID}")
+            customImage.push()
           //}
           }
         }
@@ -129,6 +142,8 @@ pipeline {
 
           // create ecs cluster
           sh encoding: 'UTF-8', script: "aws ecs create-cluster --cluster-name  ${params.ECS_CLUSTER}"
+
+         // --network-mode
 
 
           sh encoding: 'UTF-8', label: 'CREATE-SERVICE', returnStatus: true, returnStdout: true, script: "aws ecs create-service --cluster ${params.ECS_CLUSTER} --service-name ${env.IMAGE} --task-definition test:2 --desired-count 1  --network-configuration \"awsvpcConfiguration={subnets=[${params.ECS_SUBNET}],securityGroups=[${params.ECS_SECURITY_GROUP}],assignPublicIp=ENABLED}\""
