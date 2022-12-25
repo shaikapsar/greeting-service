@@ -32,6 +32,12 @@ pipeline {
     ECR_CREDENTAILS = "${params.ecr_credentails}"
     AWS_CREDENTIALS = "${params.aws_credentails}"
     REGION = "${params.region}"
+    withAWS(credentials: "${env.AWS_CREDENTIALS}") {
+      env.AWS_ACCOUNT_NUMBER =  sh (
+                    script: "aws sts get-caller-identity --query "Account" --output text",
+                    returnStdout: true
+                    ).trim()
+    }
   }
 
   stages {
