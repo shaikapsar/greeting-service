@@ -104,6 +104,7 @@ pipeline {
                           returnStdout: true
                           ).trim()
           }
+          env.AWS_ACCOUNT_NUMBER = AWS_ACCOUNT_NUMBER
           // This step reloads the env with configured values for account number and region in various values.
           readProperties(file: 'aws.env').each { key, value -> tv = value.replace("AWS_ACCOUNT_NUMBER", AWS_ACCOUNT_NUMBER)
                                                                               env[key] = tv.replace("REGION", env.REGION)
