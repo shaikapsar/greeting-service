@@ -22,7 +22,7 @@ pipeline {
   parameters {
     credentials credentialType: 'com.cloudbees.jenkins.plugins.awscredentials.AWSCredentialsImpl', defaultValue: 'ecr:us-east-1:jenkins-automation', description: 'ECR Credentails', name: 'ecr_credentails', required: false
     credentials credentialType: 'com.cloudbees.jenkins.plugins.awscredentials.AWSCredentialsImpl', defaultValue: 'jenkins-automation', description: 'AWS Credentails', name: 'aws_credentails', required: false
-    
+    string defaultValue: 'us-east-1', description: 'AWS Region', name: 'region', trim: true
   } 
 
   environment {
@@ -31,6 +31,7 @@ pipeline {
     VERSION = readMavenPom().getVersion()
     ECR_CREDENTAILS = "${params.ecr_credentails}"
     AWS_CREDENTIALS = "${params.aws_credentails}"
+    REGION = "${params.region}"
   }
 
   stages {
@@ -98,7 +99,9 @@ pipeline {
       steps {
         script {
           // This step reloads the env with configured values for account number and region in various values.
-          readProperties(file: 'aws.env').each { key, value -> env[key.toUpperCase()] = value }
+          readProperties(file: 'aws.env').each { key, value -> tv = value.replace("AWS_ACCOUNT_NUMBER", env.AWS_ACCOUNT_NUMBER)
+                                                                              env[key] = tv.replace("REGION", env.REGION)
+                                                              }
         }
       }
     }
