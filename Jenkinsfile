@@ -55,7 +55,7 @@ pipeline {
             env.COMMIT = sh (script: 'git log -1 --pretty=%h', returnStdout: true).trim()
         }
         withMaven(options: [junitPublisher(ignoreAttachments: false)]) {
-          //sh 'mvn clean findbugs:findbugs package'
+          sh 'mvn clean findbugs:findbugs package'
           
           
           echo 'Run build here...'
