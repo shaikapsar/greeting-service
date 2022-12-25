@@ -134,13 +134,7 @@ pipeline {
       when {
         branch 'main'  //only run these steps on the master branch
       }
- /*     agent {
-        docker {
-           // we can use the same image and workspace as we did previously
-          reuseNode true
-          image 'amazon/aws-cli:2.9.10'
-        }
-      }*/
+ 
 
       steps {
         withAWS(region:'us-east-1', credentials: "${env.AWS_CREDENTIALS}") {
@@ -148,10 +142,23 @@ pipeline {
           // create vpc
           //sh encoding: 'UTF-8', label: 'VPC_CREATE', returnStatus: true, returnStdout: true, script: 'aws ec2 create-vpc --cidr-block "172.31.0.0/16"'
 
-          sh 'env'
-
           // create ecs cluster
           sh encoding: 'UTF-8', script: "aws ecs create-cluster --cluster-name  ${env.ECS_CLUSTER}"
+
+          script {
+            def remoteImageTag  = "${env.VERSION}-${BUILD_NUMBER}"
+            def taskDefile      = "file://aws/task-definition-${remoteImageTag}.json"
+            def ecRegistry      = "${env.ECR_REPO}"
+          }
+          
+
+          sh  "                                                                     \
+          sed -e  's;%BUILD_TAG%;${remoteImageTag};g'                             \
+                  aws/task-definition.json >                                      \
+                  aws/task-definition-${remoteImageTag}.json                      \
+        "
+
+        sh "cat aws/task-definition-${remoteImageTag}.json"
 
          // --network-mode
 

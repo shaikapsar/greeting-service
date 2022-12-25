@@ -1,0 +1,25 @@
+{
+    "family": "api",
+    "networkMode": "awsvpc",
+    "containerDefinitions": [
+        {
+            "image": "%IMAGE%",
+            "name": "greeting-service",
+            "essential": true,
+            "cpu": 100,
+            "memoryReservation": 300,
+            "portMappings": [
+                {
+                    "containerPort": 8080,
+                    "hostPort": 8080,
+                    "protocol": "tcp"
+                }
+            ]
+        }
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "256",
+    "memory": "512"
+}
