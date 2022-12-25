@@ -158,7 +158,7 @@ pipeline {
             def taskDefile      = "file://aws/task-definition-${remoteImageTag}.json"
             def ecRegistry      = "${env.ECR_REPO}"
 
-        sh returnStdout: true, script: 'sed -e  \'s;%BUILD_TAG%;${remoteImageTag};g\'  aws/task-definition.json >   aws/task-definition-${remoteImageTag}.json'
+        sh returnStdout: true, script: "sed -e  's;%BUILD_TAG%;${remoteImageTag};g'  aws/task-definition.json >   aws/task-definition-${remoteImageTag}.json"
 
             sh returnStdout: true, script: "cat aws/task-definition-${remoteImageTag}.json"
           }
