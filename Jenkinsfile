@@ -144,14 +144,13 @@ pipeline {
  
 
       steps {
-        sh encoding: 'UTF-8', returnStdout: true, script: """if [ ! "$(docker ps -q -f name=${env.IMAGE})" ]; then
-            if [ "$(docker ps -aq -f status=exited -f name=${env.IMAGE})" ]; then
-                # cleanup
-                docker rm ${env.IMAGE}
-            fi
-            # run your container
-            docker container run -d --rm --name ${env.IMAGE} -p 8080:8080 --restart unless-stopped "${env.ECR_REPO}/${env.IMAGE}:${env.VERSION}-${env.COMMIT}"
-        fi"""
+        sh encoding: 'UTF-8', returnStdout: true, script: """
+#          if [ "$(docker ps -aq -f name=${env.IMAGE})" ]; then
+            # force remove containner 
+#            docker rm -f ${env.IMAGE}
+#          fi
+          docker container run -d --rm --name ${env.IMAGE} -p 8080:8080 --restart unless-stopped ${env.ECR_REPO}/${env.IMAGE}:${env.VERSION}-${env.COMMIT}
+        """
         
         
       }
