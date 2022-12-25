@@ -147,6 +147,8 @@ pipeline {
           // create vpc
           //sh encoding: 'UTF-8', label: 'VPC_CREATE', returnStatus: true, returnStdout: true, script: 'aws ec2 create-vpc --cidr-block "172.31.0.0/16"'
 
+          sh 'env'
+
           // create ecs cluster
           sh encoding: 'UTF-8', script: "aws ecs create-cluster --cluster-name  ${env.ECS_CLUSTER}"
 
