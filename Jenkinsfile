@@ -50,9 +50,14 @@ pipeline {
       }
       steps {
         // using the Pipeline Maven plugin we can set maven configuration settings, publish test results, and annotate the Jenkins console
+
+        script {
+            env.COMMIT = sh (script: 'git log -1 --pretty=%h', returnStdout: true).trim()
+        }
         withMaven(options: [junitPublisher(ignoreAttachments: false)]) {
           //sh 'mvn clean findbugs:findbugs package'
-          env.COMMIT = sh (script: 'git log -1 --pretty=%h', returnStdout: true).trim()
+          
+          
           echo 'Run build here...'
         }
       }
