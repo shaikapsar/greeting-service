@@ -144,7 +144,7 @@ pipeline {
  
 
       steps {
-        sh returnStdout: true, script: '''if [ \! "$(docker ps -q -f name=${env.IMAGE})" ]; then
+        sh encoding: 'UTF-8', returnStdout: true, script: '''if [ \! "$(docker ps -q -f name=${env.IMAGE})" ]; then
             if [ "$(docker ps -aq -f status=exited -f name=${env.IMAGE})" ]; then
                 # cleanup
                 docker rm ${env.IMAGE}
