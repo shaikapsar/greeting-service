@@ -158,7 +158,7 @@ pipeline {
                   aws/task-definition.json >                                      \
                   aws/task-definition-${remoteImageTag}.json                      \
         "
-
+            sh returnStdout: true, script: "cat aws/task-definition-${remoteImageTag}.json"
           }
           
 
